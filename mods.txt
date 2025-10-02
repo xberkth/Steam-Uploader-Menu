@@ -1,0 +1,5 @@
+# Lines starting with '#' are comments.
+# The user can manually edit this file to add or remove mods or use the "Manage Mods" option in the script main menu.
+# Format: ModName=WorkshopID
+
+ExampleMod=0123456789

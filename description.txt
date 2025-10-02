@@ -1,0 +1,6 @@
+[h3][b]Example Mod[/b][/h3]
+
+This is an example mod description.
+
+Workshop ID: 0123456789
+Mod ID: ExampleMod

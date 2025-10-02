@@ -1,0 +1,7 @@
+app.exe -a 108600 -w {WORKSHOP_ID} -c {CONTENT}
+app.exe -a 108600 -w {WORKSHOP_ID} -d {DESC}
+app.exe -a 108600 -w {WORKSHOP_ID} -t {TITLE}
+app.exe -a 108600 -w {WORKSHOP_ID} -v {VISIBILITY}
+app.exe -a 108600 -w {WORKSHOP_ID} -T {TAGS}
+app.exe -a 108600 -w {WORKSHOP_ID} -p {PREVIEW}
+app.exe -a 108600 -w {WORKSHOP_ID} -c {CONTENT} -d {DESC} -t {TITLE} -v {VISIBILITY} -T {TAGS} -p {PREVIEW}
