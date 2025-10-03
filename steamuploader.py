@@ -1,5 +1,5 @@
 #-------------------------
-# Steam Uploader Menu v1.0
+# Steam Uploader Menu v1.1
 #-------------------------
 
 import os
@@ -153,9 +153,8 @@ def save_settings(mod_name, description_file_name):
         with open(SETTINGS_FILE, 'w', encoding="utf-8") as f:
             f.write("# Lines starting with '#' are comments.\n")
             f.write("# settings.txt stores last used values.\n")
-            f.write("# DEFAULT_BASE_PATH points to the directory where mods are located (not recommended to change).\n")
-            f.write("# DEFAULT_DESCRIPTION_PATH will update automatically when the script first runs to match the path where the script is located.\n")
-            f.write("# The user can manually edit this file to change the values.\n\n")
+            f.write("# The user can manually edit this file to change the values or let the script handle it.\n")
+            f.write("# DEFAULT_BASE_PATH points to the directory where mods are located (not recommended to change).\n\n")
             for key, value in SETTINGS.items():
                 f.write(f"{key}={value}\n")
 
@@ -167,25 +166,103 @@ def save_settings(mod_name, description_file_name):
 # Input Functions
 # ---------------
 
-def get_description_file_name(desc_base_path=None):
-    default = SETTINGS.get('DEFAULT_DESCRIPTION_FILE_NAME', '')
+def get_description():
     while True:
-        print(f"NOTE: Description files must be located in ({YELLOW}{SETTINGS['DEFAULT_DESCRIPTION_PATH']}{RESET})")
-        desc_name = input(f"Enter the Description file name (no extension) [{default}]: ").strip()
-        clear_screen()
-        if not desc_name:
-            desc_name = default
-        if not desc_name:
-            print(f"{RED}Description file name cannot be empty.{RESET}")
+        if SETTINGS.get('DEFAULT_DESCRIPTION_PATH'):
+            initial_dir = SETTINGS['DEFAULT_DESCRIPTION_PATH']
+        else:
+            initial_dir = os.path.expanduser("~")
+
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes("-topmost", True)
+
+        file_path = filedialog.askopenfilename(
+            title="Select Description file",
+            filetypes=[("Text Files", "*.txt")],
+            initialdir=initial_dir
+        )
+
+        root.destroy()
+
+        if file_path:
+            file_path = file_path.strip()
+
+        if not file_path:
+            print(f"{RED}No description file was selected.{RESET}")
+            input("Press Enter to continue...")
+            clear_screen()
+            return None
+
+        if not os.path.isfile(file_path):
+            print(f"{RED}File not found: {file_path}{RESET}")
             continue
 
-        if desc_base_path:
-            file_path = os.path.join(desc_base_path, f"{desc_name}.txt")
-            if not os.path.isfile(file_path):
-                print(f"{RED}Description file not found: {file_path}{RESET}")
-                continue
+        filename = os.path.basename(file_path)
+        if not filename.lower().endswith(".txt"):
+            print(f"{RED}Invalid file selected. Must be a .txt file.{RESET}")
+            continue
 
-        return desc_name
+        print(f"Selected description file: {YELLOW}{filename}{RESET} ({file_path})")
+
+        SETTINGS['DEFAULT_DESCRIPTION_PATH'] = os.path.dirname(file_path)
+        SETTINGS['DEFAULT_DESCRIPTION_FILE_NAME'] = os.path.splitext(filename)[0]
+        save_settings(SETTINGS['DEFAULT_MOD_NAME'], SETTINGS['DEFAULT_DESCRIPTION_FILE_NAME'])
+
+        while True:
+            choice = input("Proceed with Description upload? (y/n or c to select a new file): ").strip().lower()
+            if choice == 'y':
+                clear_screen()
+                return file_path
+            elif choice == 'n':
+                clear_screen()
+                return None
+            elif choice == 'c':
+                clear_screen()
+                break
+            else:
+                print(f"{RED}Invalid input. Please enter y, n, or c.{RESET}")
+
+
+def get_description_file():
+    if SETTINGS.get('DEFAULT_DESCRIPTION_PATH'):
+        initial_dir = SETTINGS['DEFAULT_DESCRIPTION_PATH']
+    else:
+        initial_dir = os.path.expanduser("~")
+
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes("-topmost", True)
+
+    file_path = filedialog.askopenfilename(
+        title="Select Description file",
+        filetypes=[("Text Files", "*.txt")],
+        initialdir=initial_dir
+    )
+
+    root.destroy()
+
+    if file_path:
+        file_path = file_path.strip()
+
+    if not file_path:
+        print(f"{RED}No description file was selected.{RESET}")
+        return None
+
+    if not os.path.isfile(file_path):
+        print(f"{RED}File not found: {file_path}{RESET}")
+        return None
+
+    filename = os.path.basename(file_path)
+    if not filename.lower().endswith(".txt"):
+        print(f"{RED}Invalid file selected. Must be a .txt file.{RESET}")
+        return None
+
+    SETTINGS['DEFAULT_DESCRIPTION_PATH'] = os.path.dirname(file_path)
+    SETTINGS['DEFAULT_DESCRIPTION_FILE_NAME'] = os.path.splitext(filename)[0]
+    save_settings(SETTINGS['DEFAULT_MOD_NAME'], SETTINGS['DEFAULT_DESCRIPTION_FILE_NAME'])
+
+    return file_path
 
 
 def get_title():
@@ -503,7 +580,7 @@ def add_mod():
             break
         print(f"{RED}Workshop ID must be a 10-digit numeric value or blank.{RESET}")
     clear_screen()
-    print(f"Added/Updated mod: {YELLOW}{mod_name}{RESET} with ID ({YELLOW}{mod_id or 'MISSING ID'}){RESET}")
+    print(f"Added/Updated mod: {YELLOW}{mod_name}{RESET} with ID ({YELLOW}{mod_id or 'MISSING ID'}{RESET})")
     update_mods_file(mod_name, mod_id)
     input("Press Enter to go back...")
     clear_screen()
@@ -530,8 +607,7 @@ def remove_mod():
             idx = int(choice) - 1
             if 0 <= idx < len(MODS):
                 mod_to_remove = list(MODS.keys())[idx]
-                print(f"Selected mod: {YELLOW}{mod_to_remove}{RESET}")
-                confirm = input(f"Remove mod? (y/n): ").strip().lower()
+                confirm = input(f"Selected mod: {YELLOW}{mod_to_remove}{RESET}\nRemove mod? (y/n): ").strip().lower()
                 if confirm == 'y':
                     clear_screen()
                     print(f"Removed mod: {YELLOW}{mod_to_remove}{RESET}")
@@ -632,9 +708,9 @@ def multiple_options_flow(base_path, desc_base_path):
             if '1' in selected:
                 content_path = os.path.join(base_path, mod_name, 'Contents')
             if '2' in selected:
-                desc_file_name = get_description_file_name(desc_base_path)
-                SETTINGS['DEFAULT_DESCRIPTION_FILE_NAME'] = desc_file_name
-                desc_path = os.path.join(desc_base_path, f'{desc_file_name}.txt')
+                desc_path = get_description_file()
+                if not desc_path:
+                    break
             if '3' in selected:
                 title = get_title()
                 SETTINGS['DEFAULT_TITLE'] = title
@@ -766,16 +842,13 @@ def main():
             if not workshop_id:
                 continue
             SETTINGS['DEFAULT_MOD_NAME'] = mod_name
-            desc_file_name = get_description_file_name(desc_base_path)
-            SETTINGS['DEFAULT_DESCRIPTION_FILE_NAME'] = desc_file_name
-            desc_path = os.path.join(desc_base_path, f'{desc_file_name}.txt')
-            print(f"Selected description file: {YELLOW}{desc_file_name}.txt{RESET} ({desc_path})")
-            if confirm_action("description upload"):
-                ok, out = execute_upload(COMMAND_TEMPLATES[1], workshop_id, desc_path=desc_path)
-                execution_logs.append(out)
-                show_execution_results(execution_logs, ok)
-            else:
+            desc_path = get_description()
+            if not desc_path:
                 show_execution_results([], False, canceled=True)
+                continue
+            ok, out = execute_upload(COMMAND_TEMPLATES[1], workshop_id, desc_path=desc_path)
+            execution_logs.append(out)
+            show_execution_results(execution_logs, ok)
             continue
 
         elif choice == '3':

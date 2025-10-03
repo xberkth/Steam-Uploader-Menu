@@ -1,8 +1,7 @@
 # Lines starting with '#' are comments.
 # settings.txt stores last used values.
+# The user can manually edit this file to change the values or let the script handle it.
 # DEFAULT_BASE_PATH points to the directory where mods are located (not recommended to change).
-# DEFAULT_DESCRIPTION_PATH will update automatically when the script first runs to match the path where the script is located.
-# The user can manually edit this file to change the values.
 
 DEFAULT_BASE_PATH=%USERPROFILE%\Zomboid\Workshop
 DEFAULT_DESCRIPTION_PATH=
