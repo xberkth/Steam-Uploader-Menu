@@ -1,6 +1,6 @@
 # Steam Uploader Menu
 [![Python](https://img.shields.io/badge/Python-v3.13.7-3776AB.svg?logo=python&logoColor=F2F2F2)](https://www.python.org/downloads/)
-[![SteamUploader](https://img.shields.io/badge/SteamUploader-v0.3.0-000000.svg?logo=steam&logoColor=F2F2F2)](https://github.com/SirDoggyJvla/Steam-Uploader)
+[![SteamUploader](https://img.shields.io/badge/SteamUploader-v0.6.0-000000.svg?logo=steam&logoColor=F2F2F2)](https://github.com/SirDoggyJvla/Steam-Uploader/releases/tag/v0.6.0)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-green.svg?logo=googledocs&logoColor=F2F2F2)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 > [!NOTE]
@@ -28,11 +28,11 @@ It acts as a user-friendly wrapper around the **Steam Uploader CLI**, so you don
 ## Quick Start
 ### 1. **Requirements**
   - **Python 3.13+**
-  - Steam Workshop Uploader executable (CLI tool)
+  - Steam Uploader executable (CLI tool)
   - Windows, Linux, or macOS console
 
 ### 2. **Setup**
-  1. Clone or download this project [here](https://github.com/xberkth/Steam-Uploader-Menu/releases).
+  1. Clone this project or download the last release [here](https://github.com/xberkth/Steam-Uploader-Menu/releases).
   2. Make sure these files are present in the script folder:
      - `steamuploader.py` → the main script
      - `settings.txt` → stores default paths & last used values (auto-created if missing)
@@ -41,7 +41,7 @@ It acts as a user-friendly wrapper around the **Steam Uploader CLI**, so you don
 
 ### 3. **Run the script**
 > [!NOTE]
-> Steam needs to be open (even in the background)
+> Steam needs to be open (even in the background) for the CLI tool to work.
 ```shell
 python steamuploader.py
 ```
@@ -60,7 +60,7 @@ python steamuploader.py
 - For Description and Preview uploads, a file explorer dialog will pop up so you can select the file instead of typing the path.
 
 ### 5. **Example workflow**
-  - Add your mod and Workshop ID via **Manage Mods**.
+  - Add your Mod and Workshop ID via **Manage Mods**.
   - Pick **Description** → select a `.txt` file.
   - Confirm and the script will run the correct upload command.
   - Done ✅
@@ -75,7 +75,7 @@ python steamuploader.py
   ```
   ModName=WorkshopID
   ```
-  You can add/remove mods either manually or via the Manage Mods menu.
+  You can add/remove mods either manually or via the **Manage Mods** menu.
 
 - `commands.txt`
   Defines the CLI templates used for uploads/updates.
@@ -85,7 +85,6 @@ python steamuploader.py
 - Preview images must be **1 MB or smaller**.
 - Only `.txt` files are supported for descriptions.
 - Only `.jpg |.png | .gif` files are supported for preview image.
-- Requires the Steam Uploader CLI tool.
 - The script assumes a **10-digit Workshop ID** for mods.
 
 ## Troubleshooting
@@ -95,8 +94,6 @@ python steamuploader.py
   - → Verify that the Workshop ID is correct in mods.txt.
 - **On first run, paths are missing**
   - → The script will create settings.txt and default paths automatically. Simply run it again and select files when prompted.
-- **No file dialog appears**
-  - → Make sure Tkinter is installed correctly (pip install tk) and that you’re running the script in a desktop environment.
 
 ## Credits
 Thanks to [@SirDoggyJvla](https://github.com/SirDoggyJvla) for creating [Steam Uploader](https://github.com/SirDoggyJvla/Steam-Uploader/) 🤘

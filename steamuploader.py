@@ -1,6 +1,6 @@
-#-------------------------
-# Steam Uploader Menu v1.1
-#-------------------------
+#---------------------------
+# Steam Uploader Menu v1.1.1
+#---------------------------
 
 import os
 import sys
@@ -27,8 +27,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SETTINGS = {
     'DEFAULT_BASE_PATH': '',
     'DEFAULT_DESCRIPTION_PATH': '',
-    'DEFAULT_MOD_NAME': '',
     'DEFAULT_DESCRIPTION_FILE_NAME': '',
+    'DEFAULT_MOD_NAME': '',
     'DEFAULT_TITLE': '',
     'DEFAULT_VISIBILITY': '0',
     'DEFAULT_TAGS': '',
@@ -69,7 +69,7 @@ def clear_screen():
         print("\n" * 100)
 
 
-def save_all_mods_to_file():
+def save_mods_to_file():
     try:
         with open(MODS_FILE, 'w') as f:
             f.write("# Lines starting with '#' are comments.\n")
@@ -83,7 +83,7 @@ def save_all_mods_to_file():
 
 def update_mods_file(mod_name, new_id):
     MODS[mod_name.strip()] = new_id.strip()
-    save_all_mods_to_file()
+    save_mods_to_file()
 
 
 def load_settings():
@@ -316,7 +316,7 @@ def get_tags():
         cleaned = ",".join(tag_list)
         SETTINGS['DEFAULT_TAGS'] = cleaned
         return cleaned
-    print(f"{RED}Invalid format. Tags must be separated by commas without empty values.{RESET}")
+    print(f"{RED}Invalid format. Tags must be separated by commas.{RESET}")
     return get_tags()
 
 
@@ -479,7 +479,7 @@ def confirm_action(action_type):
         if choice in ('y', 'n'):
             clear_screen()
             return choice == 'y'
-        print(f"{RED}Invalid input.{RESET}")
+        print(f"{RED}Invalid input. Please enter y or n.{RESET}")
 
 
 # ---------------
@@ -612,7 +612,7 @@ def remove_mod():
                     clear_screen()
                     print(f"Removed mod: {YELLOW}{mod_to_remove}{RESET}")
                     del MODS[mod_to_remove]
-                    save_all_mods_to_file()
+                    save_mods_to_file()
                     input("Press Enter to go back...")
                     clear_screen()
                     return
@@ -787,8 +787,8 @@ def multiple_options_flow(base_path, desc_base_path):
 
 def main():
     load_settings()
-    load_mods()
     load_commands()
+    load_mods()
     base_path = SETTINGS.get('DEFAULT_BASE_PATH')
     desc_base_path = SETTINGS.get('DEFAULT_DESCRIPTION_PATH')
     if not base_path or not desc_base_path:
