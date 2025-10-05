@@ -1,6 +1,6 @@
 # Steam Uploader Menu
 [![Python](https://img.shields.io/badge/Python-v3.13.7-3776AB.svg?logo=python&logoColor=F2F2F2)](https://www.python.org/downloads/)
-[![SteamUploader](https://img.shields.io/badge/SteamUploader-v0.6.0-000000.svg?logo=steam&logoColor=F2F2F2)](https://github.com/SirDoggyJvla/Steam-Uploader/releases/tag/v0.6.0)
+[![SteamUploader](https://img.shields.io/badge/SteamUploader-v0.6.0-16376D.svg?logo=steam&logoColor=F2F2F2)](https://github.com/SirDoggyJvla/Steam-Uploader/releases/tag/v0.6.0)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-green.svg?logo=googledocs&logoColor=F2F2F2)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 > [!NOTE]
@@ -14,9 +14,9 @@ It acts as a user-friendly wrapper around the **Steam Uploader CLI**, so you don
 - 📂 **Content upload** – push your mod files easily
 - 📝 **Description update** – pick a `.txt` file with a file dialog
 - 🏷️ **Title, tags, and visibility settings** – update with menu prompts
-- 🖼️ **Preview image support** – select an image with a file dialog
+- 🖼️ **Preview image support** – select an image `.jpg | .png | .gif` with a file dialog
 - ⚡ **Multiple options flow** – update several fields at once in a single run
-- 🛠️ **Mod management** – add, update, remove, or list mods (`mods.txt`)
+- 🛠️ **Mod management** – add, update or remove mods from the mod list in `mods.txt`
 - 💾 **Persistent settings** – remembers your last used values in `settings.txt`
 
 ## How it works
@@ -32,9 +32,9 @@ It acts as a user-friendly wrapper around the **Steam Uploader CLI**, so you don
   - Windows, Linux, or macOS console
 
 ### 2. **Setup**
-  1. Clone this project or download the last release [here](https://github.com/xberkth/Steam-Uploader-Menu/releases).
+  1. Clone this project or download the last release [here](https://github.com/xberkth/Steam-Uploader-Menu/releases/latest).
   2. Make sure these files are present in the script folder:
-     - `steamuploader.py` → the main script
+     - `steamuploader.py` → main script
      - `settings.txt` → stores default paths & last used values (auto-created if missing)
      - `commands.txt` → command templates with placeholders like `{CONTENT}`, `{DESC}`, `{TITLE}`, `{VISIBILITY}`, `{TAGS}`, `{PREVIEW}`
      - `mods.txt` → stores your mods list in the format ModName=WorkshopID
@@ -48,15 +48,8 @@ python steamuploader.py
 
 ### 4. **Use the menu**
 - You’ll see a text-based menu with numbered options:
-  - [1] Content
-  - [2] Description
-  - [3] Title
-  - [4] Visibility
-  - [5] Tags
-  - [6] Preview
-  - [7] Multiple Options
-  - [8] Manage Mods
-  - [Q] Quit
+
+    ![Steam Uploader Menu](https://raw.githubusercontent.com/xberkth/xberkth-stuff/refs/heads/main/steam-uploader-menu.png)
 - For Description and Preview uploads, a file explorer dialog will pop up so you can select the file instead of typing the path.
 
 ### 5. **Example workflow**
@@ -84,8 +77,7 @@ python steamuploader.py
 ## Known Limitations
 - Preview images must be **1 MB or smaller**.
 - Only `.txt` files are supported for descriptions.
-- Only `.jpg |.png | .gif` files are supported for preview image.
-- The script assumes a **10-digit Workshop ID** for mods.
+- Only `.jpg | .png | .gif` files are supported for preview images.
 
 ## Troubleshooting
 - **Script can’t find files**

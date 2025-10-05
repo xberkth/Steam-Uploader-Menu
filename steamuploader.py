@@ -1,5 +1,5 @@
 #---------------------------
-# Steam Uploader Menu v1.1.1
+# Steam Uploader Menu v1.1.2
 #---------------------------
 
 import os
@@ -267,7 +267,7 @@ def get_description_file():
 
 def get_title():
     default = SETTINGS.get('DEFAULT_TITLE', '')
-    title = input(f"Enter the Title [{default}]: ").strip()
+    title = input(f"Enter the Title [{YELLOW}{default}{RESET}]: ").strip()
     clear_screen()
     if not title:
         title = default
@@ -288,7 +288,7 @@ def get_visibility():
         print("3) Unlisted")
         print("Q) Go back\n")
 
-        vis = input(f"Select (0,1,2,3,Q) [{default}]: ").strip().upper()
+        vis = input(f"Select (0,1,2,3,Q) [{YELLOW}{default}{RESET}]: ").strip().upper()
 
         if not vis:
             vis = default
@@ -304,20 +304,28 @@ def get_visibility():
 
 def get_tags():
     default = SETTINGS.get('DEFAULT_TAGS', '')
-    tags = input(f"Enter Tags (comma-separated) [{default}]: ").strip()
+    display_default = default if default else f'{YELLOW}""{RESET}'
+    tags = input(
+        f"NOTE: Type {YELLOW}\"\"{RESET} to clear current tags.\n"
+        f"Enter Tags (comma-separated) [{YELLOW}{display_default}{RESET}]: "
+    ).strip()
     clear_screen()
     if not tags:
         tags = default
-    if not tags:
-        print(f"{RED}Tags cannot be empty.{RESET}")
-        return get_tags()
-    tag_list = [tag.strip() for tag in tags.split(',')]
-    if all(tag_list):
-        cleaned = ",".join(tag_list)
-        SETTINGS['DEFAULT_TAGS'] = cleaned
-        return cleaned
-    print(f"{RED}Invalid format. Tags must be separated by commas.{RESET}")
-    return get_tags()
+    elif tags == '""':
+        SETTINGS['DEFAULT_TAGS'] = ''
+        return '__CLEAR__'
+    if tags:
+        tag_list = [tag.strip() for tag in tags.split(',')]
+        if all(tag_list):
+            cleaned = ",".join(tag_list)
+            SETTINGS['DEFAULT_TAGS'] = cleaned
+            return cleaned
+        else:
+            print(f"{RED}Invalid format. Tags must be separated by commas.{RESET}")
+            return get_tags()
+    SETTINGS['DEFAULT_TAGS'] = ''
+    return '__CLEAR__'
 
 
 def get_preview():
@@ -430,10 +438,13 @@ def get_workshop_id(mod_name):
         return MODS[mod_name]
     while True:
         wid = input(f"Enter the Workshop ID for {YELLOW}{mod_name}{RESET}: ").strip()
-        if wid.isdigit() and len(wid) == 10:
+        if not wid:
+            print(f"{YELLOW}No Workshop ID entered — keeping current or leaving empty.{RESET}")
+            return ''
+        if wid.isdigit():
             update_mods_file(mod_name, wid)
             return wid
-        print(f"{RED}Workshop ID must be a 10-digit numeric value.{RESET}")
+        print(f"{RED}Workshop ID must be a numeric value.{RESET}")
 
 
 # ------------------
@@ -515,10 +526,14 @@ def execute_upload(command_template, workshop_id, content_path=None, desc_path=N
 
     for placeholder, (value, flag_pattern) in replacements.items():
         if placeholder in cmd:
-            if value:
+            if value == "__CLEAR__":
+                cmd = cmd.replace(placeholder, '""')
+            elif value:
                 cmd = cmd.replace(placeholder, f'"{value}"')
             else:
                 cmd = cmd.replace(flag_pattern, '')
+
+    cmd = " ".join(cmd.split())
 
     if '{' in cmd and '}' in cmd:
         return False, f"{RED}ERROR: Unresolved placeholder in command{RESET}\nTemplate: {command_template}\nFinal: {cmd}"
@@ -576,9 +591,10 @@ def add_mod():
         mod_id = input(f"Enter Workshop ID for {YELLOW}{mod_name}{RESET} (or blank to clear): ").strip()
         if not mod_id:
             break
-        if mod_id.isdigit() and len(mod_id) == 10:
+        if mod_id.isdigit():
             break
-        print(f"{RED}Workshop ID must be a 10-digit numeric value or blank.{RESET}")
+        print(f"{RED}Workshop ID must be a numeric value or blank.{RESET}")
+        input("Press Enter to try again...")
     clear_screen()
     print(f"Added/Updated mod: {YELLOW}{mod_name}{RESET} with ID ({YELLOW}{mod_id or 'MISSING ID'}{RESET})")
     update_mods_file(mod_name, mod_id)
@@ -685,7 +701,7 @@ def multiple_options_flow(base_path, desc_base_path):
             print("Q) Go back\n")
 
             default = "7"
-            raw = input(f"Single, multiple (comma-separated) or all.\nSelect Options [{default}]: ").strip()
+            raw = input(f"Single, multiple (comma-separated) or all.\nSelect Options [{YELLOW}{default}{RESET}]: ").strip()
             if not raw:
                 raw = default
             raw = raw.upper()
@@ -706,22 +722,28 @@ def multiple_options_flow(base_path, desc_base_path):
             content_path = desc_path = title = visibility = tags = preview_path = None
 
             if '1' in selected:
+                clear_screen()
                 content_path = os.path.join(base_path, mod_name, 'Contents')
             if '2' in selected:
+                clear_screen()
                 desc_path = get_description_file()
                 if not desc_path:
                     break
             if '3' in selected:
+                clear_screen()
                 title = get_title()
                 SETTINGS['DEFAULT_TITLE'] = title
             if '4' in selected:
+                clear_screen()
                 visibility = get_visibility()
                 if visibility is None:
                     break
                 SETTINGS['DEFAULT_VISIBILITY'] = visibility
             if '5' in selected:
+                clear_screen()
                 tags = get_tags()
             if '6' in selected:
+                clear_screen()
                 preview_path = get_preview_file()
                 if not preview_path:
                     break
@@ -736,7 +758,9 @@ def multiple_options_flow(base_path, desc_base_path):
                 print(f"Title: {YELLOW}{title}{RESET}")
             if visibility is not None:
                 print(f"Visibility: {YELLOW}{VISIBILITY_MAP.get(visibility, visibility)}{RESET}")
-            if tags:
+            if tags == "__CLEAR__":
+                print(f"Tags: {YELLOW}\"\"{RESET} (will clear all tags)")
+            elif tags:
                 print(f"Tags: {YELLOW}{tags}{RESET}")
             if preview_path:
                 print(f"Preview image: {YELLOW}{os.path.basename(preview_path)}{RESET} ({preview_path})")
@@ -893,7 +917,12 @@ def main():
                 continue
             SETTINGS['DEFAULT_MOD_NAME'] = mod_name
             tags = get_tags()
-            print(f"Tags: {YELLOW}{tags}{RESET}")
+            if tags == "__CLEAR__":
+                print(f"Tags: {YELLOW}\"\"{RESET} (will clear all tags)")
+            elif tags:
+                print(f"Tags: {YELLOW}{tags}{RESET}")
+            else:
+                print(f"Tags: ({YELLOW}no tags{RESET})")
             if confirm_action("tags update"):
                 ok, out = execute_upload(COMMAND_TEMPLATES[4], workshop_id, tags=tags)
                 execution_logs.append(out)
