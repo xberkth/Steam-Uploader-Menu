@@ -12,7 +12,7 @@ It acts as a user-friendly wrapper around the **Steam Uploader CLI**, so you don
 ## Features
 - 🚀 **Upload / update mods** directly to Steam Workshop
 - 📂 **Content upload** – push your mod files easily
-- 📝 **Description update** – pick a `.txt` file with a file dialog
+- 📝 **Description update** – pick a `.txt | .bbcode` file with a file dialog
 - 🏷️ **Title, tags, and visibility settings** – update with menu prompts
 - 🖼️ **Preview image support** – select an image `.jpg | .png | .gif` with a file dialog
 - ⚡ **Multiple options flow** – update several fields at once in a single run
@@ -54,7 +54,7 @@ python steamuploader.py
 
 ### 5. **Example workflow**
   - Add your Mod and Workshop ID via **Manage Mods**.
-  - Pick **Description** → select a `.txt` file.
+  - Pick **Description** → select a `.txt | .bbcode` file.
   - Confirm and the script will run the correct upload command.
   - Done ✅
 
@@ -76,7 +76,7 @@ python steamuploader.py
 
 ## Known Limitations
 - Preview images must be **1 MB or smaller**.
-- Only `.txt` files are supported for descriptions.
+- Only `.txt | .bbcode` files are supported for descriptions.
 - Only `.jpg | .png | .gif` files are supported for preview images.
 
 ## Troubleshooting

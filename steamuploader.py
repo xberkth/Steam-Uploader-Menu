@@ -1,5 +1,5 @@
 #---------------------------
-# Steam Uploader Menu v1.1.2
+# Steam Uploader Menu v1.1.3
 #---------------------------
 
 import os
@@ -179,7 +179,7 @@ def get_description():
 
         file_path = filedialog.askopenfilename(
             title="Select Description file",
-            filetypes=[("Text Files", "*.txt")],
+            filetypes=[("Text Files", "*.txt *.bbcode")],
             initialdir=initial_dir
         )
 
@@ -199,8 +199,8 @@ def get_description():
             continue
 
         filename = os.path.basename(file_path)
-        if not filename.lower().endswith(".txt"):
-            print(f"{RED}Invalid file selected. Must be a .txt file.{RESET}")
+        if not filename:
+            print(f"{RED}Invalid file selected. Must be a .txt or .bbcode file.{RESET}")
             continue
 
         print(f"Selected description file: {YELLOW}{filename}{RESET} ({file_path})")
@@ -236,7 +236,7 @@ def get_description_file():
 
     file_path = filedialog.askopenfilename(
         title="Select Description file",
-        filetypes=[("Text Files", "*.txt")],
+        filetypes=[("Text Files", "*.txt *.bbcode")],
         initialdir=initial_dir
     )
 
@@ -254,8 +254,8 @@ def get_description_file():
         return None
 
     filename = os.path.basename(file_path)
-    if not filename.lower().endswith(".txt"):
-        print(f"{RED}Invalid file selected. Must be a .txt file.{RESET}")
+    if not filename:
+        print(f"{RED}Invalid file selected. Must be a .txt or .bbcode file.{RESET}")
         return None
 
     SETTINGS['DEFAULT_DESCRIPTION_PATH'] = os.path.dirname(file_path)
@@ -437,14 +437,20 @@ def get_workshop_id(mod_name):
     if mod_name in MODS and MODS[mod_name]:
         return MODS[mod_name]
     while True:
+        clear_screen()
         wid = input(f"Enter the Workshop ID for {YELLOW}{mod_name}{RESET}: ").strip()
         if not wid:
-            print(f"{YELLOW}No Workshop ID entered — keeping current or leaving empty.{RESET}")
-            return ''
+            clear_screen()
+            print(f"{RED}Workshop ID cannot be empty.{RESET}")
+            input("Press Enter to try again...")
+            continue
         if wid.isdigit():
             update_mods_file(mod_name, wid)
+            clear_screen()
             return wid
+        clear_screen()
         print(f"{RED}Workshop ID must be a numeric value.{RESET}")
+        input("Press Enter to try again...")
 
 
 # ------------------
@@ -453,18 +459,17 @@ def get_workshop_id(mod_name):
 
 def select_mod_from_menu():
     if not MODS:
+        clear_screen()
         print(f"{YELLOW}No mods found in mods.txt{RESET}")
         input("Press Enter to continue...")
         clear_screen()
         return None, None
-
     clear_screen()
     print(f"{CYAN}=== SELECT MOD FOR UPLOAD ==={RESET}")
     for i, name in enumerate(MODS.keys()):
         mod_id_display = MODS[name] if MODS[name] else "MISSING ID"
         print(f"{i+1}) {name} [{mod_id_display}]")
     print("Q) Go back\n")
-
     while True:
         choice = input("Select Mod number: ").strip().upper()
         if choice == 'Q':
@@ -578,28 +583,31 @@ def show_execution_results(execution_logs, success, canceled=False):
 # --------------
 
 def add_mod():
-    clear_screen()
-    print(f"{CYAN}=== ADD / UPDATE MOD ==={RESET}")
-    mod_name = input("Enter Mod name: ").strip()
-    if not mod_name:
-        print(f"{RED}Mod name cannot be empty.{RESET}")
+    while True:
+        clear_screen()
+        print(f"{CYAN}=== ADD / UPDATE MOD ==={RESET}")
+        mod_name = input("Enter Mod name: ").strip()
+        if not mod_name:
+            clear_screen()
+            print(f"{RED}Mod name cannot be empty.{RESET}")
+            input("Press Enter to try again...")
+            clear_screen()
+            continue
+        while True:
+            clear_screen()
+            mod_id = input(f"Enter Workshop ID for {YELLOW}{mod_name}{RESET} (or blank to clear): ").strip()
+            if not mod_id:
+                break
+            if mod_id.isdigit():
+                break
+            print(f"{RED}Workshop ID must be a numeric value or blank.{RESET}")
+            input("Press Enter to try again...")
+        clear_screen()
+        print(f"Added/Updated mod: {YELLOW}{mod_name}{RESET} with ID ({YELLOW}{mod_id or 'MISSING ID'}{RESET})")
+        update_mods_file(mod_name, mod_id)
         input("Press Enter to continue...")
         clear_screen()
         return
-    while True:
-        clear_screen()
-        mod_id = input(f"Enter Workshop ID for {YELLOW}{mod_name}{RESET} (or blank to clear): ").strip()
-        if not mod_id:
-            break
-        if mod_id.isdigit():
-            break
-        print(f"{RED}Workshop ID must be a numeric value or blank.{RESET}")
-        input("Press Enter to try again...")
-    clear_screen()
-    print(f"Added/Updated mod: {YELLOW}{mod_name}{RESET} with ID ({YELLOW}{mod_id or 'MISSING ID'}{RESET})")
-    update_mods_file(mod_name, mod_id)
-    input("Press Enter to go back...")
-    clear_screen()
 
 
 def remove_mod():
@@ -629,7 +637,7 @@ def remove_mod():
                     print(f"Removed mod: {YELLOW}{mod_to_remove}{RESET}")
                     del MODS[mod_to_remove]
                     save_mods_to_file()
-                    input("Press Enter to go back...")
+                    input("Press Enter to continue...")
                     clear_screen()
                     return
 
